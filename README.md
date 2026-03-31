@@ -240,7 +240,7 @@ Links a professional profile with license information.
 
 ---
 
-## 🧱 Backend Project Structure
+## 🧱 Project Structure
 
  ```
  api/
@@ -328,6 +328,10 @@ CORS_ORIGINS=*
 UPLOAD_DIR=./api/app/resources/uploads
 
 API_BASE=http://api:8000
+WAKE_UP_RETRIES=10
+WAKE_UP_DELAY=6
+WAKE_UP_TIMEOUT=8
+
 ```
 
 Now the docker is ready to be launched.
@@ -350,11 +354,14 @@ docker-compose up --build
 | **DB_PORT**                      | TCP port where MySQL listens. Default for MySQL is `3306`.                                                                                                                                                                                                   |
 | **ACCESS_TOKEN_EXPIRE_MINUTES**  | Duration (in minutes) for which an access token remains valid. `1440` = 24 hours. Used for short-lived authentication tokens (JWT).                                                                                                                          |
 | **SECRET_KEY**                   | Cryptographic key used to sign and verify access tokens (JWTs). Should be long, random, and kept secret.                                                                                                                                                     |
-| **DEPLOYMENT_SERVICE**           | Indicates where the app is deployed: `local` for Docker/local machine or `cloud` for production deployments (e.g., AWS, GCP).                                                                                                                                |
+| **DEPLOYMENT_SERVICE**           | Indicates where the app is deployed: `local` for Docker/local machine or `cloud` for production deployments (e.g., Render).                                                                                                                                  |
 | **FORMATTER**                    | Defines the log output format. Can be `TXT` (plain text, colorized) or `JSON` (structured logs suitable for cloud monitoring systems). The app’s logging configuration module reads this value to set up the logging handler accordingly.                    |
 | **CORS_ORIGINS**                 | Defines the CORS list for API access.                                                                                                                                                                                                                        |
 | **UPLOAD_DIR**                   | Images local storage.                                                                                                                                                                                                                                        |
 | **API_BASE**                     | API base URL for the frontend.                                                                                                                                                                                                                               |
+| **WAKE_UP_RETRIES**              | Wake up retries.                                                                                                                                                                                                                                             |
+| **WAKE_UP_DELAY**                | Wake up delay in seconds.                                                                                                                                                                                                                                    |
+| **WAKE_UP_TIMEOUT**              | Wake up timeout in seconds.                                                                                                                                                                                                                                  |
 
 ---
 
@@ -369,4 +376,22 @@ The backend can be accessed in the following URL:
 
 ```
 http://localhost:8000/docs
+```
+
+## 🛠 Render Cloud Deployment
+
+The application is deployed using Render with a containerized architecture. For simplicity and cost efficiency, SQLite 
+is used in production instead of a managed database. The system remains fully functional and can be easily scaled by 
+replacing SQLite with a cloud database.
+
+### Frontend URL
+
+```
+https://vet-ui.onrender.com
+```
+
+### Backend URL
+
+```
+http://https://vet-api-ukfu.onrender.com/docs
 ```

@@ -43,48 +43,30 @@ def _is_wake_up_error(exc: Exception) -> bool:
 def api_request(method: str, endpoint: str, show_wakeup: bool = True, **kwargs) -> requests.Response | None:
     """
     Make an HTTP request to the API with automatic retry while the backend wakes up.
-
-    Args:
-        method:      "get", "post", etc.
-        endpoint:    e.g. "/login"
-        show_wakeup: show a spinner with wake-up message on retries
-        **kwargs:    passed directly to requests (data, params, headers, files, timeout…)
-
-    Returns:
-        requests.Response on success, None if backend never woke up.
+    Uses st.spinner so Streamlit actually renders the message during the blocking sleep.
     """
     kwargs.setdefault("timeout", WAKE_UP_TIMEOUT)
     url = f"{API_BASE}{endpoint}"
     fn  = getattr(requests, method.lower())
 
-    placeholder = st.empty()
-
     for attempt in range(1, WAKE_UP_RETRIES + 1):
         try:
             resp = fn(url, **kwargs)
-            placeholder.empty()   # clear any wake-up message
             return resp
 
         except Exception as exc:
             if not _is_wake_up_error(exc):
-                placeholder.empty()
                 raise  # unexpected error — bubble up normally
 
             if attempt == WAKE_UP_RETRIES:
-                placeholder.empty()
                 return None  # gave up
 
             if show_wakeup:
-                elapsed = attempt * WAKE_UP_DELAY
-                placeholder.markdown(
-                    f"""<div class="wakeup-banner">
-                        ⏳ The server is waking up — please wait…
-                        <span class="wakeup-counter">{elapsed}s</span>
-                    </div>""",
-                    unsafe_allow_html=True,
-                )
-
-            time.sleep(WAKE_UP_DELAY)
+                elapsed_next = attempt * WAKE_UP_DELAY
+                with st.spinner(f"⏳ Server is waking up, please wait… ({elapsed_next}s)"):
+                    time.sleep(WAKE_UP_DELAY)
+            else:
+                time.sleep(WAKE_UP_DELAY)
 
     return None
 
