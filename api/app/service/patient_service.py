@@ -94,13 +94,13 @@ def create_patient(
 
         else:
             logging.info(f"Creating new patient record {patient.patient.name} for user {user.username}.")
-            return create_new_patient(existing_profile.id, user, patient.patient, existing_profile=True, institution_id=institution_id)
+            return create_new_patient(existing_profile.id, user, patient.patient, institution_id=institution_id)
 
     else:
         logging.info(f"Creating new profile for {patient.owner.contact_email}.")
         try:
             profile_id = create_profile(patient.owner, user)
-            return create_new_patient(profile_id, user, patient.patient, existing_profile=False, institution_id=institution_id)
+            return create_new_patient(profile_id, user, patient.patient, institution_id=institution_id)
         except Exception as e:
             logging.error(f"Error creating profile: {e}")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -188,7 +188,6 @@ def create_profile(patient: profile_schema.Profile, user: user_schema.User) -> i
 def create_new_patient(
     profile_id: int, user: user_schema.User,
     patient: patient_schema.PatientInput,
-    existing_profile: bool,
     institution_id: int
 ) -> patient_schema.PatientResponse:
     """Create a new patient entry in the database with consistent status values."""
@@ -270,6 +269,7 @@ async def get_patients(
             (PatientModel.institution == institution_id) &
             (PatientModel.deleted_at.is_null())
         )
+        .order_by(PatientModel.name.asc())
     )
 
     if name:
