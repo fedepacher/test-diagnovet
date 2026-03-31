@@ -3,8 +3,6 @@ from peewee import SqliteDatabase
 from peewee_async import PooledMySQLDatabase as PooledMySQLDatabaseAsync
 
 from api.app.utils.settings import Settings
-from api.app.utils.create_tables import create_tables
-from api.app.utils.fill_tables import fill_all_tables
 
 
 DB_NAME = Settings.db_name()
@@ -37,10 +35,3 @@ elif DEPLOYMENT_SERVICE == "cloud":
 
 else:
     raise ValueError(f"Unknown DEPLOYMENT_SERVICE: {DEPLOYMENT_SERVICE}")
-
-
-def handler_db():
-    """Create tables and fill them."""
-    logging.info("Handling database tables")
-    create_tables()
-    fill_all_tables()

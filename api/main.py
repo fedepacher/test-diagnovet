@@ -16,7 +16,7 @@ from api.app.router.study_router import router as study_router
 from api.app.router.user_router import router as user_router
 from api.app.utils.lifespan import lifespan
 from api.app.utils.middlewares import DBSessionMiddleware, LanguageMiddleware
-from api.app.utils.db import handler_db
+from api.app.utils.db_function import handler_db
 from api.app.utils.settings import Settings
 
 
