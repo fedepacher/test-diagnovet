@@ -1,6 +1,6 @@
 import streamlit as st
 import requests
-from utils import load_css, auth_headers, get_institution_id, back_button, API_BASE
+from utils import load_css, auth_headers, get_institution_id, back_button, api_request, server_unavailable_msg, API_BASE
 
 
 def show():
@@ -15,20 +15,17 @@ def show():
         st.markdown('<div class="msg-error">⚠ Missing study or institution data.</div>', unsafe_allow_html=True)
         return
 
-    try:
-        resp = requests.get(
-            f"{API_BASE}/study/results/",
-            params={"institution_id": institution_id, "result_id": result_id},
-            headers=auth_headers(),
-            timeout=8,
-        )
-        if resp.status_code != 200:
-            st.markdown(f'<div class="msg-error">⚠ Error loading study ({resp.status_code}).</div>', unsafe_allow_html=True)
-            return
-        d = resp.json()
-    except requests.exceptions.ConnectionError:
-        st.markdown('<div class="msg-error">⚠ Cannot reach the server.</div>', unsafe_allow_html=True)
+    resp = api_request("get", "/study/results/",
+        params={"institution_id": institution_id, "result_id": result_id},
+        headers=auth_headers(),
+    )
+    if resp is None:
+        server_unavailable_msg()
         return
+    if resp.status_code != 200:
+        st.markdown(f'<div class="msg-error">⚠ Error loading study ({resp.status_code}).</div>', unsafe_allow_html=True)
+        return
+    d = resp.json()
 
     # ── Header ──
     study_type = d.get("study_type", "Study").capitalize()
@@ -117,8 +114,8 @@ def show():
                 # served by FastAPI static files at /static/
                 static_url = f"{API_BASE}/static/{url}"
                 try:
-                    img_resp = requests.get(static_url, headers=auth_headers(), timeout=10)
-                    if img_resp.status_code == 200:
+                    img_resp = api_request("get", f"/static/{url}", headers=auth_headers(), show_wakeup=False)
+                    if img_resp is not None and img_resp.status_code == 200:
                         st.image(img_resp.content, caption=desc, width='stretch')
                     else:
                         st.markdown(

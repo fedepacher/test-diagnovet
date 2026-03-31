@@ -1,6 +1,6 @@
 import streamlit as st
 import requests
-from utils import load_css, back_button, auth_headers, get_institution_id, API_BASE
+from utils import load_css, back_button, auth_headers, get_institution_id, api_request, server_unavailable_msg, API_BASE
 
 
 def show():
@@ -52,19 +52,17 @@ def show():
             ("files", (f.name, f.getvalue(), f.type or "application/octet-stream"))
             for f in uploaded_files
         ]
-        try:
-            with st.spinner("Uploading..."):
-                resp = requests.post(
-                    f"{API_BASE}/patient/upload_patient",
-                    params={"institution_id": institution_id},
-                    headers=auth_headers(),
-                    files=files_payload,
-                    timeout=60,
-                )
-            if resp.status_code in (200, 201):
-                st.markdown('<div class="msg-success">✓ Files uploaded successfully.</div>', unsafe_allow_html=True)
-            else:
-                detail = resp.json().get("detail", f"Upload failed ({resp.status_code}).")
-                st.markdown(f'<div class="msg-error">⚠ {detail}</div>', unsafe_allow_html=True)
-        except requests.exceptions.ConnectionError:
-            st.markdown('<div class="msg-error">⚠ Cannot reach the server.</div>', unsafe_allow_html=True)
+        with st.spinner("Uploading..."):
+            resp = api_request("post", "/patient/upload_patient",
+                params={"institution_id": institution_id},
+                headers=auth_headers(),
+                files=files_payload,
+                timeout=120,
+            )
+        if resp is None:
+            server_unavailable_msg()
+        elif resp.status_code in (200, 201):
+            st.markdown('<div class="msg-success">✓ Files uploaded successfully.</div>', unsafe_allow_html=True)
+        else:
+            detail = resp.json().get("detail", f"Upload failed ({resp.status_code}).")
+            st.markdown(f'<div class="msg-error">⚠ {detail}</div>', unsafe_allow_html=True)

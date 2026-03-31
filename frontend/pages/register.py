@@ -16,6 +16,15 @@ def show():
     gender_map  = {g["name"]: g["id"] for g in genders}
     role_map    = {r["name"]: r["id"] for r in roles}
 
+    # Ensure selects always start at index 0 when entering the register page
+    for key, options in [
+        ("reg_gender",  ["— select —"] + list(gender_map.keys())),
+        ("reg_country", ["— select —"] + list(country_map.keys())),
+        ("reg_role",    ["— select —"] + list(role_map.keys())),
+    ]:
+        if key not in st.session_state:
+            st.session_state[key] = "— select —"
+
     st.markdown('<div class="brand">✦ Create account</div>', unsafe_allow_html=True)
     st.markdown('<div class="subtitle">Fill in your details below</div>', unsafe_allow_html=True)
 
@@ -58,7 +67,7 @@ def show():
     with col2:
         st.markdown('<div class="field-label">Gender</div>', unsafe_allow_html=True)
         gender_options = ["— select —"] + list(gender_map.keys())
-        gender_sel = st.selectbox("gender", gender_options, label_visibility="collapsed")
+        gender_sel = st.selectbox("gender", gender_options, index=0, key="reg_gender", label_visibility="collapsed")
 
     # ── Location & contact ──
     st.markdown('<div class="section-title">Location & contact</div>', unsafe_allow_html=True)
@@ -66,7 +75,7 @@ def show():
     with col1:
         st.markdown('<div class="field-label">Country *</div>', unsafe_allow_html=True)
         country_options = ["— select —"] + list(country_map.keys())
-        country_sel = st.selectbox("country", country_options, label_visibility="collapsed")
+        country_sel = st.selectbox("country", country_options, index=0, key="reg_country", label_visibility="collapsed")
     with col2:
         st.markdown('<div class="field-label">Contact number</div>', unsafe_allow_html=True)
         contact_number = st.text_input("contact_number", label_visibility="collapsed", placeholder="+54 9 11 …")
@@ -80,10 +89,10 @@ def show():
     with col1:
         st.markdown('<div class="field-label">Role</div>', unsafe_allow_html=True)
         role_options = ["— select —"] + list(role_map.keys())
-        role_sel = st.selectbox("role", role_options, label_visibility="collapsed")
+        role_sel = st.selectbox("role", role_options, index=0, key="reg_role", label_visibility="collapsed")
     with col2:
         st.markdown('<div class="field-label">Institution *</div>', unsafe_allow_html=True)
-        institution = st.text_input("institution", label_visibility="collapsed", placeholder="University / Company")
+        institution = st.text_input("institution", label_visibility="collapsed", placeholder="Institution")
 
     st.markdown('<div style="height:12px"></div>', unsafe_allow_html=True)
 
@@ -99,6 +108,8 @@ def show():
 
     # ── Actions ──
     if cancel_clicked:
+        for k in ["reg_gender", "reg_country", "reg_role"]:
+            st.session_state.pop(k, None)
         set_page("login")
         st.rerun()
 
@@ -137,6 +148,8 @@ def show():
             resp = requests.post(f"{API_BASE}/user/", data=payload, timeout=8)
 
             if resp.status_code == 201:
+                for k in ["reg_gender", "reg_country", "reg_role"]:
+                    st.session_state.pop(k, None)
                 st.session_state.error = ""
                 st.session_state.success = f"Account created successfully. Please sign in, {name}!"
                 set_page("login")

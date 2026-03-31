@@ -1,6 +1,6 @@
 import streamlit as st
 import requests
-from utils import load_css, set_page, auth_headers, get_institution_id, back_button, API_BASE
+from utils import load_css, set_page, auth_headers, get_institution_id, back_button, api_request, server_unavailable_msg, API_BASE
 
 
 def show():
@@ -22,26 +22,22 @@ def show():
     limit = 10
     page_num = st.session_state.patients_page
 
-    try:
-        resp = requests.get(
-            f"{API_BASE}/patient/",
-            params={"page": page_num, "limit": limit, "institution_id": institution_id},
-            headers=auth_headers(),
-            timeout=8,
-        )
-        if resp.status_code != 200:
-            st.markdown(f'<div class="msg-error">⚠ Error loading patients ({resp.status_code}).</div>', unsafe_allow_html=True)
-            return
-
-        data = resp.json()
-        items = data.get("items", [])
-        pagination = data.get("pagination", {})
-        total_pages = pagination.get("totalPages", 1)
-        total = pagination.get("total", 0)
-
-    except requests.exceptions.ConnectionError:
-        st.markdown('<div class="msg-error">⚠ Cannot reach the server.</div>', unsafe_allow_html=True)
+    resp = api_request("get", "/patient/",
+        params={"page": page_num, "limit": limit, "institution_id": institution_id},
+        headers=auth_headers(),
+    )
+    if resp is None:
+        server_unavailable_msg()
         return
+    if resp.status_code != 200:
+        st.markdown(f'<div class="msg-error">⚠ Error loading patients ({resp.status_code}).</div>', unsafe_allow_html=True)
+        return
+
+    data = resp.json()
+    items = data.get("items", [])
+    pagination = data.get("pagination", {})
+    total_pages = pagination.get("totalPages", 1)
+    total = pagination.get("total", 0)
 
     if not items:
         st.markdown('<p class="empty-state">No patients found for your institution.</p>', unsafe_allow_html=True)

@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 from pathlib import Path
 
-from utils import load_css, set_page, API_BASE
+from utils import load_css, set_page, api_request, server_unavailable_msg, API_BASE
 
 
 def show():
@@ -42,11 +42,10 @@ def show():
             st.rerun()
 
         try:
-            resp = requests.post(
-                f"{API_BASE}/login",
-                data={"username": identifier, "password": password},
-                timeout=8,
-            )
+            resp = api_request("post", "/login", data={"username": identifier, "password": password})
+            if resp is None:
+                server_unavailable_msg()
+                st.stop()
             if resp.status_code == 200:
                 data = resp.json()
                 st.session_state.token = data.get("access_token")
@@ -61,8 +60,8 @@ def show():
                 detail = resp.json().get("detail", "Login failed.")
                 st.session_state.error = detail
                 st.rerun()
-        except requests.exceptions.ConnectionError:
-            st.session_state.error = "Cannot reach the server. Is the API running?"
+        except Exception:
+            st.session_state.error = "Unexpected error. Please try again."
             st.rerun()
 
     if register_clicked:
