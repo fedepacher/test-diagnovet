@@ -1,0 +1,74 @@
+.studies-count {
+    color: #555;
+    font-size: 0.82rem;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.study-card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+}
+.study-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #f0ece4;
+    margin-bottom: 4px;
+}
+.study-meta {
+    font-size: 0.8rem;
+    color: #666;
+}
+.btn-outline .stButton > button {
+    background: transparent;
+    border: 1px solid #c8b89a;
+    color: #c8b89a;
+    border-radius: 8px;
+    padding: 8px 0;
+    font-size: 0.8rem;
+}
+.btn-outline .stButton > button:hover {
+    background: #c8b89a;
+    color: #0f0f0f;
+}
+.btn-back .stButton > button {
+    background: transparent;
+    border: none;
+    color: #555;
+    font-size: 0.82rem;
+    padding: 4px 0;
+    width: auto;
+}
+.btn-back .stButton > button:hover { color: #c8b89a; }
+.empty-state {
+    color: #444;
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: 32px;
+}
+
+/* ── Study as clickable row ── */
+.study-btn .stButton > button {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    color: #f0ece4;
+    text-align: left;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    line-height: 1.6;
+    transition: border-color .2s, background .2s;
+}
+.study-btn .stButton > button:hover {
+    background: #202020;
+    border-color: #c8b89a;
+    transform: none;
+    box-shadow: none;
+}

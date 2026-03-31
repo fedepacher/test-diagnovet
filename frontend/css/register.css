@@ -1,0 +1,16 @@
+/* ── Register page specific styles ── */
+
+/* Section titles that separate form groups */
+.section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.05rem;
+    color: #c8b89a;
+    margin: 24px 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #222;
+}
+
+/* Widen the block-container for the register form */
+.block-container {
+    max-width: 680px !important;
+}

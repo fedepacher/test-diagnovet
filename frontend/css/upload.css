@@ -1,0 +1,24 @@
+.upload-count {
+    color: #888;
+    font-size: 0.85rem;
+    margin: 8px 0;
+}
+.file-chip {
+    display: inline-block;
+    background: #1e1e1e;
+    border: 1px solid #2e2e2e;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.82rem;
+    color: #c8b89a;
+    margin: 4px 4px 4px 0;
+}
+.btn-back .stButton > button {
+    background: transparent;
+    border: none;
+    color: #555;
+    font-size: 0.82rem;
+    padding: 4px 0;
+    width: auto;
+}
+.btn-back .stButton > button:hover { color: #c8b89a; }

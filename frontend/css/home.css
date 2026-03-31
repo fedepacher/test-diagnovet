@@ -1,0 +1,19 @@
+/* ── Home page specific styles ── */
+
+.home-user {
+    color: #888;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+.home-user span {
+    color: #c8b89a;
+    font-weight: 600;
+}
+
+.home-placeholder {
+    color: #555;
+    font-size: 0.9rem;
+    text-align: center;
+    margin: 16px 0;
+}

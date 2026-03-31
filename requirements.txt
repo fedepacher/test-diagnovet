@@ -1,0 +1,46 @@
+# FastAPI and related libraries
+fastapi[all]==0.115.6
+pydantic==2.10.6
+pydantic-core==2.27.2
+pydantic-settings==2.8.1
+starlette==0.41.3
+uvicorn==0.32.1
+gunicorn==23.0.0
+requests
+
+# Colorama for colored terminal text
+colorama==0.4.6
+# Cryptography library for secure data handling
+cryptography==44.0.0
+
+aiomysql==0.2.0
+# Bcrypt for password hashing
+bcrypt==4.0.1
+# Cryptography library for secure data handling
+cryptography==44.0.0
+# Database libraries
+
+# MySQL support
+mysql-connector-python==9.1.0
+pymysql==1.1.1
+peewee==3.17.1
+peewee-async==1.0.0
+
+# HTTP libraries
+httpx==0.28.1
+
+# Miscellaneous libraries
+# PyJWT for JSON Web Tokens
+pyjwt==2.10.1
+
+# Password hashing
+passlib==1.7.4
+# JSON Web Signatures
+python-jose==3.4.0
+# C parser for cryptography
+pycparser==2.22
+# PDF parser
+pdfplumber==0.11.9
+PyMuPDF==1.27.2.2
+# AI
+openai== 2.30.0
