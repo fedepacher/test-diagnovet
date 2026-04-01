@@ -1,6 +1,5 @@
 import streamlit as st
-import requests
-from utils import load_css, set_page, auth_headers, get_institution_id, back_button, api_request, server_unavailable_msg, API_BASE
+from utils import load_css, set_page, auth_headers, get_institution_id, back_button, api_request, server_unavailable_msg
 
 
 def show():
@@ -16,16 +15,42 @@ def show():
         st.markdown('<div class="msg-error">⚠ Could not load institution data.</div>', unsafe_allow_html=True)
         return
 
+    # ── Search bar ──
+    search_input = st.text_input(
+        "Search patients",
+        value=st.session_state.get("patient_search", ""),
+        placeholder="🔍 Search by name...",
+        key="patient_search_input",
+        label_visibility="collapsed",
+    )
+
+    # Initialize session state if not exists
+    if "patient_search" not in st.session_state:
+        st.session_state.patient_search = ""
+
     if "patients_page" not in st.session_state:
         st.session_state.patients_page = 1
 
-    limit = 10
+    # Detect changes and reset pagination
+    if search_input != st.session_state.patient_search:
+        st.session_state.patient_search = search_input
+        st.session_state.patients_page = 1
+        st.rerun()
+
+    search_term = st.session_state.patient_search
+
+    # ── Pagination state ──
+    if "patients_page" not in st.session_state:
+        st.session_state.patients_page = 1
+    limit    = 10
     page_num = st.session_state.patients_page
 
-    resp = api_request("get", "/patient/",
-        params={"page": page_num, "limit": limit, "institution_id": institution_id},
-        headers=auth_headers(),
-    )
+    # ── API request ──
+    params = {"page": page_num, "limit": limit, "institution_id": institution_id}
+    if search_term:
+        params["name"] = search_term
+
+    resp = api_request("get", "/patient/", params=params, headers=auth_headers())
     if resp is None:
         server_unavailable_msg()
         return
@@ -33,18 +58,26 @@ def show():
         st.markdown(f'<div class="msg-error">⚠ Error loading patients ({resp.status_code}).</div>', unsafe_allow_html=True)
         return
 
-    data = resp.json()
-    items = data.get("items", [])
+    data       = resp.json()
+    items      = data.get("items", [])
     pagination = data.get("pagination", {})
     total_pages = pagination.get("totalPages", 1)
-    total = pagination.get("total", 0)
+    total       = pagination.get("total", 0)
+
+    # ── Results header ──
+    if search_term:
+        st.markdown(
+            f'<p class="patients-count">Found {total} result(s) for "<strong>{search_term}</strong>"</p>',
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(f'<p class="patients-count">{total} patient(s)</p>', unsafe_allow_html=True)
 
     if not items:
-        st.markdown('<p class="empty-state">No patients found for your institution.</p>', unsafe_allow_html=True)
+        st.markdown('<p class="empty-state">No patients found.</p>', unsafe_allow_html=True)
         return
 
-    st.markdown(f'<p class="patients-count">{total} patient(s) found</p>', unsafe_allow_html=True)
-
+    # ── Patient list ──
     for patient in items:
         neutered = "✓ Neutered" if patient.get("is_neutered") else "✗ Not neutered"
         label = (
@@ -54,7 +87,7 @@ def show():
         )
         st.markdown('<div class="patient-btn">', unsafe_allow_html=True)
         if st.button(label, key=f"patient_{patient['id']}", use_container_width=True):
-            st.session_state.selected_patient_id = patient["id"]
+            st.session_state.selected_patient_id   = patient["id"]
             st.session_state.selected_patient_name = patient["name"]
             set_page("studies")
             st.rerun()
