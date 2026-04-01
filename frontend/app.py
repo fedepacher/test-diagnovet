@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import load_css
+from utils import load_css, wait_for_backend
 from pages import login, register, home, patients, studies, study_result, upload
 
 # ── Page config ──────────────────────────────────────────────────────────────
@@ -19,6 +19,7 @@ for key, default in {
     "token": None,
     "user": None,
     "profile": None,
+    "backend_ready": False,
     "error": "",
     "success": "",
     "selected_patient_id": None,
@@ -32,6 +33,10 @@ for key, default in {
 st.markdown('<div style="text-align:center; margin-top:20px; margin-bottom:8px;">', unsafe_allow_html=True)
 st.image("resources/logo.png", width=200)
 st.markdown('</div>', unsafe_allow_html=True)
+
+# ── Wait for backend before rendering anything ───────────────────────────────
+if not wait_for_backend():
+    st.stop()
 
 # ── Router ───────────────────────────────────────────────────────────────────
 page = st.session_state.page

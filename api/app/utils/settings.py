@@ -34,6 +34,12 @@ class Settings:
     cors_origins: list[str] = ([origin.strip() for origin in cors_origins_env.split(",")] if cors_origins_env else [])
     upload_dir: str = os.getenv('UPLOAD_DIR')
 
+    llm_provider: str = os.getenv('LLM_PROVIDER')
+    openai_api_key: str = os.getenv('OPENAI_API_KEY')
+    openai_model: str = os.getenv('OPENAI_MODEL', "gpt-4o-mini")
+    gemini_api_key: str = os.getenv('GEMINI_API_KEY')
+    gemini_model: str = os.getenv('GEMINI_MODEL', "gemini-2.0-flash")
+
     @classmethod
     def db_name(cls):
         """

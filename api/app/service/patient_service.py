@@ -30,7 +30,7 @@ from api.app.utils.functions import (check_if_id_exist,
                                      parse_gender,
                                      save_file,
                                      )
-from api.app.utils.ai_function import call_llm
+from api.app.utils.ai_function import call_llm, QuotaExhaustedError
 from api.app.utils.db import db
 
 
@@ -506,12 +506,13 @@ def upload_information(institution_id: int, file: UploadFile, user: user_schema.
         # Call AI
         try:
             ai_result = call_llm(text)
-        except Exception as e:
-            logging.error(f"AI extraction failed: {str(e)}")
+        except QuotaExhaustedError as e:
             raise HTTPException(
-                status_code=status.HTTP_502_BAD_GATEWAY,
-                detail="AI processing failed"
+                status_code=503,
+                detail="AI service daily quota exceeded. Please try again tomorrow or contact support."
             )
+        except Exception as e:
+            raise HTTPException(status_code=502, detail="AI processing failed")
 
         # Add raw text
         ai_result["raw_text"] = text

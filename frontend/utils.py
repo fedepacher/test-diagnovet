@@ -7,7 +7,7 @@ from pathlib import Path
 API_BASE = os.getenv('API_BASE', "http://localhost:8000")
 
 # Render free tier: service can take up to 50s to wake up
-WAKE_UP_RETRIES = os.getenv('WAKE_UP_RETRIES', 10)
+WAKE_UP_RETRIES = os.getenv('WAKE_UP_RETRIES', 20)
 WAKE_UP_DELAY = os.getenv('WAKE_UP_DELAY', 6)   # seconds between retries
 WAKE_UP_TIMEOUT = os.getenv('WAKE_UP_TIMEOUT', 8)   # seconds per request attempt
 
@@ -69,6 +69,75 @@ def api_request(method: str, endpoint: str, show_wakeup: bool = True, **kwargs) 
                 time.sleep(WAKE_UP_DELAY)
 
     return None
+
+
+def wait_for_backend() -> bool:
+    """
+    Poll the health check endpoint until the backend is up or we give up.
+    Shows a friendly UI while waiting. Returns True if backend is up, False otherwise.
+    """
+    # Fast path: if already confirmed up this session, skip
+    if st.session_state.get("backend_ready"):
+        return True
+
+    try:
+        resp = requests.get(f"{API_BASE}/", timeout=WAKE_UP_TIMEOUT)
+        if resp.status_code == 200:
+            st.session_state["backend_ready"] = True
+            return True
+    except Exception:
+        pass
+
+    # Backend is sleeping — show wake-up UI and poll
+    st.markdown(
+        """<div style="text-align:center; padding: 32px 0 16px 0;">
+            <div style="font-size:2.5rem; margin-bottom:12px;">⏳</div>
+            <div style="font-size:1.1rem; color:#c8b89a; font-weight:600; margin-bottom:6px;">
+                Server is waking up…
+            </div>
+            <div style="font-size:0.85rem; color:#555;">
+                This may take up to a minute on the free tier. Please wait.
+            </div>
+        </div>""",
+        unsafe_allow_html=True,
+    )
+
+    progress = st.progress(0)
+    status_text = st.empty()
+
+    for attempt in range(1, WAKE_UP_RETRIES + 1):
+        pct = int((attempt / WAKE_UP_RETRIES) * 100)
+        progress.progress(pct)
+        status_text.markdown(
+            f'<p style="text-align:center; color:#555; font-size:0.82rem;">Attempt {attempt} of {WAKE_UP_RETRIES}…</p>',
+            unsafe_allow_html=True,
+        )
+        time.sleep(WAKE_UP_DELAY)
+        try:
+            resp = requests.get(f"{API_BASE}/", timeout=WAKE_UP_TIMEOUT)
+            if resp.status_code == 200:
+                progress.progress(100)
+                status_text.markdown(
+                    '<p style="text-align:center; color:#6fcf97; font-size:0.9rem;">✓ Server is ready!</p>',
+                    unsafe_allow_html=True,
+                )
+                time.sleep(0.8)
+                st.session_state["backend_ready"] = True
+                st.rerun()
+                return True
+        except Exception:
+            pass
+
+    # Gave up
+    progress.empty()
+    status_text.empty()
+    st.markdown(
+        """<div class="wakeup-banner wakeup-error">
+            ❌ The server took too long to respond. Please refresh the page and try again.
+        </div>""",
+        unsafe_allow_html=True,
+    )
+    return False
 
 
 def fetch_options(endpoint: str) -> list[dict]:
