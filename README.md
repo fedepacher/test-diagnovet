@@ -198,9 +198,12 @@ Links a professional profile with license information.
 ---
 
 ### 🏫 Institution Endpoints
-| Method | Endpoint             | Description                    |
-|--------|----------------------|--------------------------------|
-| `PUT`  | `/institutions/{id}` | Update institution information |
+| Method | Endpoint            | Description                    |
+|--------|---------------------|--------------------------------|
+| `PUT`  | `/institution/{id}` | Update institution information |
+| `GET`  | `/institution/all`  | Get all institutions           |
+| `GET`  | `/institution/`     | Get institutions by user       |
+| `POST` | `/institution/`     | Create institution             |
 
 ---
 

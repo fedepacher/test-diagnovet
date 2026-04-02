@@ -167,7 +167,13 @@ def fetch_profile() -> dict | None:
 
 
 def get_institution_id() -> int | None:
-    """Return the institution id from the cached profile."""
+    """
+    Return the active institution id.
+    Prefers the one selected in home (active_institution_id),
+    falls back to the default from profile.
+    """
+    if st.session_state.get("active_institution_id"):
+        return st.session_state["active_institution_id"]
     profile = fetch_profile()
     if profile and "institutions" in profile:
         return profile["institutions"]["id"]

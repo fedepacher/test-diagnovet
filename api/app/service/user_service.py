@@ -48,6 +48,8 @@ def create_user(user: user_schema.UserInput) -> user_schema.User:
             detail=msg
         )
 
+    db_institution = InstitutionModel.filter((fn.LOWER(InstitutionModel.name) == user.institution)).first()
+
     gender_id = None
     country_id = None
     role_id = None
@@ -98,17 +100,18 @@ def create_user(user: user_schema.UserInput) -> user_schema.User:
         logging.info(f"Saving user: {user.username} in users table")
         db_user.save()
 
-        db_institution = InstitutionModel(
-            name=user.institution,
-            updated_at=datetime.now(),
-            created_at=datetime.now(),
-            updated_by=db_user.id,
-            created_by=db_user.id,
-            active=True,
-            status=StatusEnum.ACTIVE
-        )
-        logging.info(f"Saving institution: {user.institution} in institutions table")
-        db_institution.save()
+        if not db_institution:
+            db_institution = InstitutionModel(
+                name=user.institution.lower(),
+                updated_at=datetime.now(),
+                created_at=datetime.now(),
+                updated_by=db_user.id,
+                created_by=db_user.id,
+                active=True,
+                status=StatusEnum.ACTIVE
+            )
+            logging.info(f"Saving institution: {user.institution} in institutions table")
+            db_institution.save()
 
         db_user_institution = UserInstitutionModel(
             institution=db_institution.id,

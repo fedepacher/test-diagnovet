@@ -104,12 +104,6 @@ async def get_all_patients(
         order_dir=order_dir
     )
 
-    if not patients:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No patients found for the specified filters."
-        )
-
     return patients
 
 

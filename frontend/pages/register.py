@@ -8,19 +8,24 @@ from utils import load_css, set_page, fetch_options, API_BASE
 def show():
     load_css("css/register.css")
 
-    countries = fetch_options("/country/")
-    genders   = fetch_options("/gender/")
-    roles     = fetch_options("/role/")
+    countries    = fetch_options("/country/")
+    genders      = fetch_options("/gender/")
+    roles        = fetch_options("/role/")
+    institutions = fetch_options("/institution/all")
 
-    country_map = {c["name"]: c["id"] for c in countries}
-    gender_map  = {g["name"]: g["id"] for g in genders}
-    role_map    = {r["name"]: r["id"] for r in roles}
+    country_map     = {c["name"]: c["id"] for c in countries}
+    gender_map      = {g["name"]: g["id"] for g in genders}
+    role_map        = {r["name"]: r["id"] for r in roles}
+    institution_map = {i["name"]: i["id"] for i in institutions}
+
+    CREATE_NEW = "➕ Create new institution"
 
     # Ensure selects always start at index 0 when entering the register page
     for key, options in [
-        ("reg_gender",  ["— select —"] + list(gender_map.keys())),
-        ("reg_country", ["— select —"] + list(country_map.keys())),
-        ("reg_role",    ["— select —"] + list(role_map.keys())),
+        ("reg_gender",      ["— select —"] + list(gender_map.keys())),
+        ("reg_country",     ["— select —"] + list(country_map.keys())),
+        ("reg_role",        ["— select —"] + list(role_map.keys())),
+        ("reg_institution", ["— select —"] + [CREATE_NEW] + list(institution_map.keys())),
     ]:
         if key not in st.session_state:
             st.session_state[key] = "— select —"
@@ -92,7 +97,29 @@ def show():
         role_sel = st.selectbox("role", role_options, index=0, key="reg_role", label_visibility="collapsed")
     with col2:
         st.markdown('<div class="field-label">Institution *</div>', unsafe_allow_html=True)
-        institution = st.text_input("institution", label_visibility="collapsed", placeholder="Institution")
+        inst_options = ["— select —"] + [CREATE_NEW] + list(institution_map.keys())
+        institution_sel = st.selectbox(
+            "institution", inst_options, index=0,
+            key="reg_institution", label_visibility="collapsed"
+        )
+
+    # Show text input below when "Create new" is selected
+    if institution_sel == CREATE_NEW:
+        st.markdown('<div class="field-label">New institution name *</div>', unsafe_allow_html=True)
+        institution_new = st.text_input(
+            "institution_new", label_visibility="collapsed",
+            placeholder="Enter institution name…"
+        )
+    else:
+        institution_new = ""
+
+    # Resolve final institution value
+    if institution_sel == CREATE_NEW:
+        institution = institution_new  # free text
+    elif institution_sel == "— select —":
+        institution = ""
+    else:
+        institution = institution_sel  # existing name
 
     st.markdown('<div style="height:12px"></div>', unsafe_allow_html=True)
 
@@ -108,7 +135,7 @@ def show():
 
     # ── Actions ──
     if cancel_clicked:
-        for k in ["reg_gender", "reg_country", "reg_role"]:
+        for k in ["reg_gender", "reg_country", "reg_role", "reg_institution"]:
             st.session_state.pop(k, None)
         set_page("login")
         st.rerun()
@@ -148,7 +175,7 @@ def show():
             resp = requests.post(f"{API_BASE}/user/", data=payload, timeout=8)
 
             if resp.status_code == 201:
-                for k in ["reg_gender", "reg_country", "reg_role"]:
+                for k in ["reg_gender", "reg_country", "reg_role", "reg_institution"]:
                     st.session_state.pop(k, None)
                 st.session_state.error = ""
                 st.session_state.success = f"Account created successfully. Please sign in, {name}!"
