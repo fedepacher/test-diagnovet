@@ -73,3 +73,49 @@
     transform: none;
     box-shadow: none;
 }
+
+/* ── Sort buttons ── */
+.sort-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.btn-sort .stButton,
+.btn-sort-active .stButton {
+    width: auto !important;
+}
+.btn-sort .stButton > button,
+.btn-sort-active .stButton > button {
+    white-space: nowrap !important;
+    width: auto !important;
+    min-width: unset !important;
+    padding: 6px 18px !important;
+    border-radius: 20px !important;
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.02em !important;
+    text-transform: none !important;
+    transition: all .2s !important;
+}
+.btn-sort .stButton > button {
+    background: #1a1a1a !important;
+    border: 1px solid #2a2a2a !important;
+    color: #666 !important;
+}
+.btn-sort .stButton > button:hover {
+    border-color: #555 !important;
+    color: #ccc !important;
+    background: #222 !important;
+    transform: translateY(-1px) !important;
+}
+.btn-sort-active .stButton > button {
+    background: rgba(200,184,154,.12) !important;
+    border: 1px solid #c8b89a !important;
+    color: #c8b89a !important;
+    font-weight: 600 !important;
+    box-shadow: 0 0 10px rgba(200,184,154,.1) !important;
+}
+.btn-sort-active .stButton > button:hover {
+    background: rgba(200,184,154,.2) !important;
+    transform: translateY(-1px) !important;
+}

@@ -70,6 +70,8 @@ async def get_all_patients(
     request: Request,
     institution_id: int,
     name: Optional[str] = '',
+    order_by: Optional[str] = '',
+    order_dir: Optional[str] = '',
     page: int = 1,
     limit: int = 10,
     current_user: User = Depends(get_current_user)
@@ -82,6 +84,8 @@ async def get_all_patients(
         current_user (User): The currently authenticated user.
         institution_id (Optional[int]): ID of the institution to filter patients. Defaults to 0 (no filter).
         name (Optional[str]): Patient's name.
+        order_by (str): Order fields according to the given order.
+        order_dir (str): Order fields asc or desc.
         page (int): Page number for pagination.
         limit (int): Maximum number of patients to retrieve per page.
 
@@ -95,7 +99,9 @@ async def get_all_patients(
         current_user,
         institution_id=institution_id,
         name=name,
-        accept_language=accept_language
+        accept_language=accept_language,
+        order_by=order_by,
+        order_dir=order_dir
     )
 
     if not patients:

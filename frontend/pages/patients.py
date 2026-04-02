@@ -15,40 +15,80 @@ def show():
         st.markdown('<div class="msg-error">⚠ Could not load institution data.</div>', unsafe_allow_html=True)
         return
 
+    # ── Session state defaults ──
+    for key, default in {
+        "patient_search": "",
+        "patients_page": 1,
+        "patient_order_by": "",
+        "patient_order_dir": "asc",
+    }.items():
+        if key not in st.session_state:
+            st.session_state[key] = default
+
     # ── Search bar ──
     search_input = st.text_input(
         "Search patients",
-        value=st.session_state.get("patient_search", ""),
+        value=st.session_state.patient_search,
         placeholder="🔍 Search by name...",
         key="patient_search_input",
         label_visibility="collapsed",
     )
 
-    # Initialize session state if not exists
-    if "patient_search" not in st.session_state:
-        st.session_state.patient_search = ""
-
-    if "patients_page" not in st.session_state:
-        st.session_state.patients_page = 1
-
-    # Detect changes and reset pagination
     if search_input != st.session_state.patient_search:
         st.session_state.patient_search = search_input
         st.session_state.patients_page = 1
         st.rerun()
 
-    search_term = st.session_state.patient_search
+    # ── Sort controls ──
+    st.markdown('<div class="sort-row">', unsafe_allow_html=True)
+    col_name, col_date, col_spacer = st.columns([2, 2, 1])
 
-    # ── Pagination state ──
-    if "patients_page" not in st.session_state:
-        st.session_state.patients_page = 1
+    with col_name:
+        active = st.session_state.patient_order_by == "name"
+        if active:
+            label = "🔤 A→Z" if st.session_state.patient_order_dir == "asc" else "🔤 Z→A"
+        else:
+            label = "🔤 A-Z"
+        st.markdown(f'<div class="{"btn-sort-active" if active else "btn-sort"}">', unsafe_allow_html=True)
+        if st.button(label, key="sort_name"):
+            if active:
+                st.session_state.patient_order_dir = "desc" if st.session_state.patient_order_dir == "asc" else "asc"
+            else:
+                st.session_state.patient_order_by  = "name"
+                st.session_state.patient_order_dir = "asc"
+            st.session_state.patients_page = 1
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with col_date:
+        active = st.session_state.patient_order_by == "created_at"
+        if active:
+            label = "🕒 Newest" if st.session_state.patient_order_dir == "desc" else "🕒 Oldest"
+        else:
+            label = "🕒 Recent"
+        st.markdown(f'<div class="{"btn-sort-active" if active else "btn-sort"}">', unsafe_allow_html=True)
+        if st.button(label, key="sort_date"):
+            if active:
+                st.session_state.patient_order_dir = "desc" if st.session_state.patient_order_dir == "asc" else "asc"
+            else:
+                st.session_state.patient_order_by  = "created_at"
+                st.session_state.patient_order_dir = "desc"  # default: newest first
+            st.session_state.patients_page = 1
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)  # close sort-row
+
+    # ── API request ──
     limit    = 10
     page_num = st.session_state.patients_page
 
-    # ── API request ──
     params = {"page": page_num, "limit": limit, "institution_id": institution_id}
-    if search_term:
-        params["name"] = search_term
+    if st.session_state.patient_search:
+        params["name"] = st.session_state.patient_search
+    if st.session_state.patient_order_by:
+        params["order_by"]  = st.session_state.patient_order_by
+        params["order_dir"] = st.session_state.patient_order_dir
 
     resp = api_request("get", "/patient/", params=params, headers=auth_headers())
     if resp is None:
@@ -58,16 +98,16 @@ def show():
         st.markdown(f'<div class="msg-error">⚠ Error loading patients ({resp.status_code}).</div>', unsafe_allow_html=True)
         return
 
-    data       = resp.json()
-    items      = data.get("items", [])
-    pagination = data.get("pagination", {})
+    data        = resp.json()
+    items       = data.get("items", [])
+    pagination  = data.get("pagination", {})
     total_pages = pagination.get("totalPages", 1)
     total       = pagination.get("total", 0)
 
     # ── Results header ──
-    if search_term:
+    if st.session_state.patient_search:
         st.markdown(
-            f'<p class="patients-count">Found {total} result(s) for "<strong>{search_term}</strong>"</p>',
+            f'<p class="patients-count">Found {total} result(s) for "<strong>{st.session_state.patient_search}</strong>"</p>',
             unsafe_allow_html=True,
         )
     else:

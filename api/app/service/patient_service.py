@@ -228,6 +228,8 @@ async def get_patients(
     institution_id: int = 0,
     name: str = '',
     accept_language: str = 'en',
+    order_by: Optional[str] = 'created_at',
+    order_dir: Optional[str] = 'desc',
 ) -> List[patient_schema.PatientBasicData]:
     """
     Get all the user's patients in the DB.
@@ -237,6 +239,8 @@ async def get_patients(
         institution_id (int): Institution ID.
         name (str): Patient's name.
         accept_language (str): LLanguage.
+        order_by (str): Order fields according to the given order.
+        order_dir (str): Order fields asc or desc.
 
     Returns:
         list: List of patients filtered by user.
@@ -267,10 +271,24 @@ async def get_patients(
         .join(GenderModel, JOIN.LEFT_OUTER)
         .where(
             (PatientModel.institution == institution_id) &
+            (PatientModel.created_by == user.id) &
             (PatientModel.deleted_at.is_null())
         )
-        .order_by(PatientModel.name.asc())
     )
+
+    order_field = PatientModel.created_at  # default
+
+    if order_by == "name":
+        order_field = PatientModel.name
+    elif order_by == "created_at":
+        order_field = PatientModel.created_at
+
+    if order_dir == "asc":
+        order_field = order_field.asc()
+    else:
+        order_field = order_field.desc()
+
+    query = query.order_by(order_field)
 
     if name:
         query = query.where(
@@ -342,7 +360,8 @@ def get_patient(
         .where(
             (PatientModel.id == patient_id) &
             (PatientModel.institution == institution_id) &
-            (PatientModel.deleted_at.is_null())
+            (PatientModel.deleted_at.is_null()) &
+            (PatientModel.created_by == user.id)
         )
         .dicts()
         .first()
