@@ -46,6 +46,7 @@ services:
       GEMINI_API_KEY: ${GEMINI_API_KEY}
       OPENAI_MODEL: ${OPENAI_MODEL}
       GEMINI_MODEL: ${GEMINI_MODEL}
+      IMAGE_AI_FILTER: ${IMAGE_AI_FILTER}
 
     networks:
       va_network:

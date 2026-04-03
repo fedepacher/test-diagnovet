@@ -40,6 +40,8 @@ class Settings:
     gemini_api_key: str = os.getenv('GEMINI_API_KEY')
     gemini_model: str = os.getenv('GEMINI_MODEL', "gemini-2.0-flash")
 
+    use_ai_filter = os.getenv("IMAGE_AI_FILTER", "false")
+
     @classmethod
     def db_name(cls):
         """

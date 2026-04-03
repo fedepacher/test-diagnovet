@@ -22,7 +22,6 @@ from api.app.model.veterinarian_model import Veterinarians as VeterinarianModel
 from api.app.utils.global_def import StatusEnum, ResultEnum
 from api.app.utils.functions import (check_if_id_exist,
                                      get_language_fields,
-                                     extract_images_from_pdf,
                                      extract_text_from_pdf,
                                      get_model_id,
                                      normalize_breed,
@@ -30,7 +29,8 @@ from api.app.utils.functions import (check_if_id_exist,
                                      parse_gender,
                                      save_file,
                                      )
-from api.app.utils.ai_function import call_llm, QuotaExhaustedError
+from api.app.utils.image_extractor import extract_images_from_pdf
+from api.app.utils.llm_service import call_llm, QuotaExhaustedError
 from api.app.utils.db import db
 
 
@@ -531,7 +531,7 @@ def upload_information(institution_id: int, file: UploadFile, user: user_schema.
                 detail="AI service daily quota exceeded. Please try again tomorrow or contact support."
             )
         except Exception as e:
-            raise HTTPException(status_code=502, detail="AI processing failed")
+            raise HTTPException(status_code=502, detail=f"AI processing failed {str(e)}")
 
         # Add raw text
         ai_result["raw_text"] = text
@@ -561,6 +561,7 @@ def upload_information(institution_id: int, file: UploadFile, user: user_schema.
         }
 
     except HTTPException as e:
+        logging.exception(f"Unexpected error {str(e)}")
         raise e
 
     except Exception as e:

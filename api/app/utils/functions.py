@@ -131,29 +131,6 @@ def extract_text_from_pdf(file_path: str) -> str:
     return text
 
 
-def extract_images_from_pdf(file_path: str, institution_id: int,  patient_id: int, study_id: int) -> list:
-    doc = fitz.open(file_path)
-    images = []
-    image_path = f"image/institution_{institution_id}/patient_{patient_id}/study_{study_id}"
-    image_dir = f"{Settings.upload_dir}/{image_path}"
-    os.makedirs(image_dir, exist_ok=True)
-
-    for page_index in range(len(doc)):
-        page = doc[page_index]
-        for img_index, img in enumerate(page.get_images(full=True)):
-            xref = img[0]
-            base_image = doc.extract_image(xref)
-            image_bytes = base_image["image"]
-
-            filename = f"page_{page_index}_{img_index}.png"
-            img_path = f"{image_dir}/{filename}"
-            with open(img_path, "wb") as f:
-                f.write(image_bytes)
-
-            images.append(f"{image_path}/{filename}")
-
-    return images
-
 def normalize_species(text: str | None) -> str | None:
     if not text:
         return None

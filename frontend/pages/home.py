@@ -49,7 +49,14 @@ def show():
     inst_map     = {i["name"]: i["id"] for i in institutions}
     inst_options = list(inst_map.keys()) + [CREATE_NEW]
 
-    # Use a separate internal key to avoid widget/state conflict
+    # If a new institution was just created, it's stored in pending_institution
+    # Apply it now that inst_map is refreshed and contains the new name
+    if "pending_institution" in st.session_state:
+        pending = st.session_state.pop("pending_institution")
+        if pending in inst_map:
+            st.session_state.home_institution_value = pending
+
+    # Initialize default selection
     if "home_institution_value" not in st.session_state:
         st.session_state.home_institution_value = (
             default_institution_name
@@ -57,10 +64,11 @@ def show():
             else inst_options[0]
         )
 
-    # Clamp index in case options changed
+    # Clamp index in case selected value disappeared from options
+    current_value = st.session_state.home_institution_value
     default_index = (
-        inst_options.index(st.session_state.home_institution_value)
-        if st.session_state.home_institution_value in inst_options else 0
+        inst_options.index(current_value)
+        if current_value in inst_options else 0
     )
 
     st.markdown('<div class="field-label">Active institution</div>', unsafe_allow_html=True)
@@ -68,10 +76,10 @@ def show():
         "institution",
         inst_options,
         index=default_index,
-        key="home_institution_widget",   # widget key — never set manually
+        key="home_institution_widget",
         label_visibility="collapsed",
     )
-    # Sync to internal value key
+    # Sync widget value back to internal key
     st.session_state.home_institution_value = institution_sel
 
     # ── Create new institution inline ──
@@ -90,11 +98,9 @@ def show():
                 result = _create_institution(new_inst_name)
             if result:
                 st.session_state.pop("profile", None)
-                # Set internal value — safe because widget key is different
-                st.session_state.home_institution_value = new_inst_name
-                # Reset widget by removing its key so it re-renders with new options
+                # Store name to select after rerun — inst_map will include it on next render
+                st.session_state.pending_institution = new_inst_name
                 st.session_state.pop("home_institution_widget", None)
-                st.markdown(f'<div class="msg-success">✓ Institution "{new_inst_name}" created.</div>', unsafe_allow_html=True)
                 st.rerun()
             else:
                 st.markdown('<div class="msg-error">⚠ Could not create institution.</div>', unsafe_allow_html=True)
