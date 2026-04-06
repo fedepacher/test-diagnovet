@@ -243,6 +243,8 @@ Links a professional profile with license information.
 
 ---
 
+>Note: In `api/app/resources/postman-collection` will find a postman collection JSON file to test each endpoint.
+
 ## 🧱 Project Structure
 
  ```
@@ -335,6 +337,19 @@ WAKE_UP_RETRIES=10
 WAKE_UP_DELAY=6
 WAKE_UP_TIMEOUT=8
 
+# AI Provider
+LLM_PROVIDER=gemini
+# LLM_PROVIDER=openai
+
+# AI API key
+OPENAI_API_KEY=XXXXXXXXXXXXX
+GEMINI_API_KEY=xxxxxxxxxxxxx
+
+# Models
+OPENAI_MODEL=gpt-4o-mini
+GEMINI_MODEL=gemini-2.0-flash-lite
+
+IMAGE_AI_FILTER=false
 ```
 
 Now the docker is ready to be launched.
@@ -396,5 +411,9 @@ https://vet-ui.onrender.com
 ### Backend URL
 
 ```
-http://https://vet-api-ukfu.onrender.com/docs
+https://vet-api-ukfu.onrender.com/health
 ```
+
+
+>Note: If the UI does not load, the backend may be in a sleep state (free tier on Render).
+Please open the backend URL first to wake it up, then refresh the UI.
