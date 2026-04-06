@@ -138,6 +138,93 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get all institutions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:8000/institution/all",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"institution",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get institution by user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://localhost:8000/institution/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"institution",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create institution",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://localhost:8000/institution/?name=segunda vida",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"institution",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "segunda vida"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -324,7 +411,7 @@
 								},
 								{
 									"key": "username",
-									"value": "juan",
+									"value": "juanjuan",
 									"type": "text"
 								},
 								{
@@ -412,7 +499,8 @@
 									"console.log(\"Token saved:\", token);"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -612,7 +700,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/patient/?page=1&limit=10&institution_id=1",
+							"raw": "http://localhost:8000/patient/?page=1&limit=10&institution_id=6&order_by=created_at&order_dir=desc",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -638,7 +726,25 @@
 								},
 								{
 									"key": "institution_id",
-									"value": "1"
+									"value": "6"
+								},
+								{
+									"key": "order_by",
+									"value": "created_at"
+								},
+								{
+									"key": "order_by",
+									"value": "name",
+									"disabled": true
+								},
+								{
+									"key": "order_dir",
+									"value": "desc"
+								},
+								{
+									"key": "order_dir",
+									"value": "asc",
+									"disabled": true
 								}
 							]
 						}
