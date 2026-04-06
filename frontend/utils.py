@@ -80,14 +80,6 @@ def wait_for_backend() -> bool:
     if st.session_state.get("backend_ready"):
         return True
 
-    try:
-        resp = requests.get(f"{API_BASE}/", timeout=WAKE_UP_TIMEOUT)
-        if resp.status_code == 200:
-            st.session_state["backend_ready"] = True
-            return True
-    except Exception:
-        pass
-
     # Backend is sleeping — show wake-up UI and poll
     st.markdown(
         """<div style="text-align:center; padding: 32px 0 16px 0;">
@@ -108,13 +100,18 @@ def wait_for_backend() -> bool:
     for attempt in range(1, WAKE_UP_RETRIES + 1):
         pct = int((attempt / WAKE_UP_RETRIES) * 100)
         progress.progress(pct)
+        delay = WAKE_UP_DELAY * (1 + (attempt // 5))
         status_text.markdown(
-            f'<p style="text-align:center; color:#555; font-size:0.82rem;">Attempt {attempt} of {WAKE_UP_RETRIES}, waiting {WAKE_UP_TIMEOUT} sec…</p>',
+            f'<p style="text-align:center; color:#555; font-size:0.82rem;">Attempt {attempt} of {WAKE_UP_RETRIES} — retrying in {delay}s…</p>',
             unsafe_allow_html=True,
         )
-        time.sleep(WAKE_UP_DELAY)
+
         try:
-            resp = requests.get(f"{API_BASE}/", timeout=WAKE_UP_TIMEOUT)
+            resp = requests.get(
+                f"{API_BASE}/",
+                timeout=(5, 5),  # connect timeout, read timeout
+            )
+
             if resp.status_code == 200:
                 progress.progress(100)
                 status_text.markdown(
@@ -125,8 +122,11 @@ def wait_for_backend() -> bool:
                 st.session_state["backend_ready"] = True
                 st.rerun()
                 return True
+
         except Exception:
             pass
+
+        time.sleep(delay)
 
     # Gave up
     progress.empty()
