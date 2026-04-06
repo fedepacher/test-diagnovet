@@ -108,7 +108,7 @@ def wait_for_backend() -> bool:
 
         try:
             resp = requests.get(
-                f"{API_BASE}/",
+                f"{API_BASE}/health",
                 timeout=(5, 5),  # connect timeout, read timeout
             )
 
