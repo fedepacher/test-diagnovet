@@ -9,7 +9,7 @@ API_BASE = os.getenv('API_BASE', "http://localhost:8000")
 # Render free tier: service can take up to 50s to wake up
 WAKE_UP_RETRIES = int(os.getenv('WAKE_UP_RETRIES', 20))
 WAKE_UP_DELAY = int(os.getenv('WAKE_UP_DELAY', 6))   # seconds between retries
-WAKE_UP_TIMEOUT = int(os.getenv('WAKE_UP_TIMEOUT', 50))   # seconds per request attempt
+WAKE_UP_TIMEOUT = int(os.getenv('WAKE_UP_TIMEOUT', 8))   # seconds per request attempt
 
 
 def load_css(path: str) -> None:
@@ -71,16 +71,8 @@ def api_request(method: str, endpoint: str, show_wakeup: bool = True, **kwargs) 
     return None
 
 
-def wait_for_backend() -> bool:
-    """
-    Poll the health check endpoint until the backend is up or we give up.
-    Shows a friendly UI while waiting. Returns True if backend is up, False otherwise.
-    """
-    # Fast path: if already confirmed up this session, skip
-    if st.session_state.get("backend_ready"):
-        return True
-
-    # Backend is sleeping — show wake-up UI and poll
+def _show_wakeup_ui() -> tuple:
+    """Render the wake-up waiting UI and return (progress, status_text)."""
     st.markdown(
         """<div style="text-align:center; padding: 32px 0 16px 0;">
             <div style="font-size:2.5rem; margin-bottom:12px;">⏳</div>
@@ -93,42 +85,79 @@ def wait_for_backend() -> bool:
         </div>""",
         unsafe_allow_html=True,
     )
+    return st.progress(0), st.empty()
 
-    progress = st.progress(0)
-    status_text = st.empty()
 
-    for attempt in range(1, WAKE_UP_RETRIES + 1):
-        pct = int((attempt / WAKE_UP_RETRIES) * 100)
-        progress.progress(pct)
-        delay = WAKE_UP_DELAY * (1 + (attempt // 5))
+def _mark_ready(progress, status_text) -> bool:
+    """Show success state, mark backend ready, trigger rerun."""
+    progress.progress(100)
+    status_text.markdown(
+        '<p style="text-align:center; color:#6fcf97; font-size:0.9rem;">✓ Server is ready!</p>',
+        unsafe_allow_html=True,
+    )
+    time.sleep(0.8)
+    st.session_state["backend_ready"] = True
+    st.rerun()
+    return True
+
+
+def wait_for_backend() -> bool:
+    """
+    Wake up the Render free tier backend.
+
+    Key insight: Render keeps the TCP connection open while the dyno boots.
+    A single request with a long READ timeout (90s) is enough — the server
+    will eventually respond without closing the connection.
+    Many short-timeout requests just pile up and all fail.
+    """
+    if st.session_state.get("backend_ready"):
+        return True
+
+    # Fast path: backend might already be up (e.g. frontend just woke first)
+    try:
+        resp = requests.get(f"{API_BASE}/health", timeout=(5, 5))
+        if resp.status_code == 200:
+            st.session_state["backend_ready"] = True
+            return True
+    except Exception:
+        pass
+
+    # Backend is sleeping — show UI
+    progress, status_text = _show_wakeup_ui()
+
+    # ── Round 1: one patient long-timeout request (90s read timeout) ──
+    # Render holds the connection while booting, so this usually succeeds.
+    status_text.markdown(
+        '<p style="text-align:center; color:#555; font-size:0.82rem;">Waiting for server to boot…</p>',
+        unsafe_allow_html=True,
+    )
+    progress.progress(30)
+    try:
+        resp = requests.get(
+            f"{API_BASE}/health",
+            timeout=(10, 90),  # connect_timeout=10s, read_timeout=90s
+        )
+        if resp.status_code == 200:
+            return _mark_ready(progress, status_text)
+    except Exception:
+        pass
+
+    # ── Round 2: a few shorter retries in case the long request timed out ──
+    for attempt in range(1, 4):
+        progress.progress(30 + attempt * 20)
         status_text.markdown(
-            f'<p style="text-align:center; color:#555; font-size:0.82rem;">Attempt {attempt} of {WAKE_UP_RETRIES} — retrying in {delay}s…</p>',
+            f'<p style="text-align:center; color:#555; font-size:0.82rem;">Retrying… ({attempt}/3)</p>',
             unsafe_allow_html=True,
         )
-
+        time.sleep(15)
         try:
-            resp = requests.get(
-                f"{API_BASE}/health",
-                timeout=(5, 5),  # connect timeout, read timeout
-            )
-
+            resp = requests.get(f"{API_BASE}/health", timeout=(10, 30))
             if resp.status_code == 200:
-                progress.progress(100)
-                status_text.markdown(
-                    '<p style="text-align:center; color:#6fcf97; font-size:0.9rem;">✓ Server is ready!</p>',
-                    unsafe_allow_html=True,
-                )
-                time.sleep(0.8)
-                st.session_state["backend_ready"] = True
-                st.rerun()
-                return True
-
+                return _mark_ready(progress, status_text)
         except Exception:
             pass
 
-        time.sleep(delay)
-
-    # Gave up
+    # ── Gave up ──
     progress.empty()
     status_text.empty()
     st.markdown(
