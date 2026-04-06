@@ -137,29 +137,23 @@ def wait_for_backend() -> bool:
     status_text = st.empty()
     error_text  = st.empty()
 
-    # Retry schedule: (timeout, wait_before_next)
-    schedule = [
-        (15, 5),   # quick attempt
-        (20, 5),   # slightly more patient
-        (30, 5),   # getting serious
-        (40, 5),   # really waiting now
-        (60, 5),   # full minute
-        (60, 5),   # one more full minute
-        (60, 0),   # last shot
-    ]
+    # Keep each request well under Render's 30s proxy limit
+    request_timeout = (5, 20)  # connect=5s, read=20s
+    pause_between = 3  # seconds between attempts
+    max_attempts = 20  # 20 x (20+3) ~= 7 min total max
 
-    for i, (read_timeout, sleep_after) in enumerate(schedule):
-        pct = int(((i + 1) / len(schedule)) * 95)
+    for attempt in range(1, max_attempts + 1):
+        pct = min(int((attempt / max_attempts) * 95), 95)
         progress.progress(pct)
         status_text.markdown(
             f'<p style="text-align:center; color:#555; font-size:0.82rem;">'
-            f'Attempt {i + 1} of {len(schedule)} — waiting up to {read_timeout}s…</p>',
+            f'Attempt {attempt} of {max_attempts}…</p>',
             unsafe_allow_html=True,
         )
         error_text.empty()
 
         try:
-            resp = requests.get(health_url, timeout=(10, read_timeout))
+            resp = requests.get(health_url, timeout=request_timeout)
             if resp.status_code == 200:
                 progress.progress(100)
                 status_text.markdown(
@@ -170,29 +164,31 @@ def wait_for_backend() -> bool:
                 st.session_state["backend_ready"] = True
                 st.rerun()
                 return True
-            else:
-                error_text.markdown(
-                    f'<p style="text-align:center; color:#555; font-size:0.75rem;">Got {resp.status_code} — retrying…</p>',
-                    unsafe_allow_html=True,
-                )
+            error_text.markdown(
+                f'<p style="text-align:center; color:#555; font-size:0.75rem;">'
+                f'Got {resp.status_code} — retrying in {pause_between}s…</p>',
+                unsafe_allow_html=True,
+            )
         except requests.exceptions.Timeout:
             error_text.markdown(
-                f'<p style="text-align:center; color:#555; font-size:0.75rem;">Timeout after {read_timeout}s — retrying…</p>',
+                f'<p style="text-align:center; color:#555; font-size:0.75rem;">'
+                f'Timeout — retrying in {pause_between}s…</p>',
                 unsafe_allow_html=True,
             )
         except requests.exceptions.ConnectionError:
             error_text.markdown(
-                '<p style="text-align:center; color:#555; font-size:0.75rem;">Connection refused — server still booting…</p>',
+                '<p style="text-align:center; color:#555; font-size:0.75rem;">'
+                'Connection refused — server still booting…</p>',
                 unsafe_allow_html=True,
             )
         except Exception as e:
             error_text.markdown(
-                f'<p style="text-align:center; color:#555; font-size:0.75rem;">{type(e).__name__} — retrying…</p>',
+                f'<p style="text-align:center; color:#555; font-size:0.75rem;">'
+                f'{type(e).__name__} — retrying…</p>',
                 unsafe_allow_html=True,
             )
 
-        if sleep_after:
-            time.sleep(sleep_after)
+        time.sleep(pause_between)
 
     # Gave up
     progress.empty()
