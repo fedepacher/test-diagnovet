@@ -7,9 +7,9 @@ from pathlib import Path
 API_BASE = os.getenv('API_BASE', "http://localhost:8000")
 
 # Render free tier: service can take up to 50s to wake up
-WAKE_UP_RETRIES = os.getenv('WAKE_UP_RETRIES', 20)
-WAKE_UP_DELAY = os.getenv('WAKE_UP_DELAY', 6)   # seconds between retries
-WAKE_UP_TIMEOUT = os.getenv('WAKE_UP_TIMEOUT', 50)   # seconds per request attempt
+WAKE_UP_RETRIES = int(os.getenv('WAKE_UP_RETRIES', 20))
+WAKE_UP_DELAY = int(os.getenv('WAKE_UP_DELAY', 6))   # seconds between retries
+WAKE_UP_TIMEOUT = int(os.getenv('WAKE_UP_TIMEOUT', 50))   # seconds per request attempt
 
 
 def load_css(path: str) -> None:
