@@ -109,7 +109,7 @@ def wait_for_backend() -> bool:
         pct = int((attempt / WAKE_UP_RETRIES) * 100)
         progress.progress(pct)
         status_text.markdown(
-            f'<p style="text-align:center; color:#555; font-size:0.82rem;">Attempt {attempt} of {WAKE_UP_RETRIES}…</p>',
+            f'<p style="text-align:center; color:#555; font-size:0.82rem;">Attempt {attempt} of {WAKE_UP_RETRIES}, waiting {WAKE_UP_TIMEOUT} sec…</p>',
             unsafe_allow_html=True,
         )
         time.sleep(WAKE_UP_DELAY)
