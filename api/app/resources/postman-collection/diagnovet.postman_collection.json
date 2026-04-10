@@ -1,0 +1,923 @@
+{
+	"info": {
+		"_postman_id": "86c81e29-a1ff-43dd-ab85-eff07db6592c",
+		"name": "diagnovet",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37712667",
+		"_collection_link": "https://restless-spaceship-309896.postman.co/workspace/New-Team-Workspace~c5412b6b-b6fb-4dd9-a5a1-e3b96cab3a68/collection/37712667-86c81e29-a1ff-43dd-ab85-eff07db6592c?action=share&source=collection_link&creator=37712667"
+	},
+	"item": [
+		{
+			"name": "breed",
+			"item": [
+				{
+					"name": "breed",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/breed/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"breed",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "country",
+			"item": [
+				{
+					"name": "countries",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/country/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"country",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "gender",
+			"item": [
+				{
+					"name": "genders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "es",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/gender/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"gender",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "institution",
+			"item": [
+				{
+					"name": "update institution name",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "ClubMax",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/institution/?institution_id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"institution",
+								""
+							],
+							"query": [
+								{
+									"key": "institution_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all institutions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:8000/institution/all",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"institution",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get institution by user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://localhost:8000/institution/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"institution",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create institution",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://localhost:8000/institution/?name=segunda vida",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"institution",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "segunda vida"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "roles",
+			"item": [
+				{
+					"name": "get all roles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/role/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"role",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "profile",
+			"item": [
+				{
+					"name": "update profile",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "prueba@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "prueba",
+									"type": "text"
+								},
+								{
+									"key": "last_name",
+									"value": "prueba",
+									"type": "text"
+								},
+								{
+									"key": "document_number",
+									"value": "28112356",
+									"type": "text"
+								},
+								{
+									"key": "contact_number",
+									"value": "3416125401",
+									"type": "text"
+								},
+								{
+									"key": "birthdate",
+									"value": "1981-01-09",
+									"type": "text"
+								},
+								{
+									"key": "gender_id",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "country_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "professional_role_id",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/profile/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"profile",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "profile_info",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://localhost:8000/profile/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"profile",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "specie",
+			"item": [
+				{
+					"name": "specie",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/specie/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"specie",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "create_user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "juanjuan@mail.com",
+									"description": "The user's email address.",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "juanjuan",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "fedepacher",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "federico",
+									"type": "text"
+								},
+								{
+									"key": "last_name",
+									"value": "pacher",
+									"type": "text"
+								},
+								{
+									"key": "birthdate",
+									"value": "2000-01-06",
+									"type": "text"
+								},
+								{
+									"key": "country_id",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "document_number",
+									"value": "1232456789",
+									"type": "text"
+								},
+								{
+									"key": "gender_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "institution",
+									"value": "my pet",
+									"type": "text"
+								},
+								{
+									"key": "role_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "contact_number",
+									"value": "987654321",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/user/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response",
+									"const response = pm.response.json();",
+									"",
+									"// Extract the access_token",
+									"const token = response.access_token;",
+									"",
+									"// Save it to the environment variable",
+									"pm.environment.set(\"access_token\", token);",
+									"console.log(\"Token saved:\", token);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "fedepacher",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "fedepacher",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "helthckeck",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "version",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/version",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"version"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "patients",
+			"item": [
+				{
+					"name": "create_patient",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "owner_email",
+									"value": "frant.torres@mail.com",
+									"type": "text"
+								},
+								{
+									"key": "owner_name",
+									"value": "fran",
+									"type": "text"
+								},
+								{
+									"key": "owner_last_name",
+									"value": "torres",
+									"type": "text"
+								},
+								{
+									"key": "owner_role_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "owner_document_number",
+									"value": "1223987465",
+									"type": "text"
+								},
+								{
+									"key": "owner_contact_number",
+									"value": "123456789",
+									"type": "text"
+								},
+								{
+									"key": "owner_country_id",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "buby",
+									"type": "text"
+								},
+								{
+									"key": "specie",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "breed",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "age",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "gender_id",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "is_neutered",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "vet_name",
+									"value": "Castro",
+									"type": "text"
+								},
+								{
+									"key": "vet_license",
+									"value": "123456",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/patient/?institution_id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"patient",
+								""
+							],
+							"query": [
+								{
+									"key": "institution_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get alll patient",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/patient/?page=1&limit=10&institution_id=6&order_by=created_at&order_dir=desc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"patient",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "name",
+									"value": "fede sanches",
+									"disabled": true
+								},
+								{
+									"key": "institution_id",
+									"value": "6"
+								},
+								{
+									"key": "order_by",
+									"value": "created_at"
+								},
+								{
+									"key": "order_by",
+									"value": "name",
+									"disabled": true
+								},
+								{
+									"key": "order_dir",
+									"value": "desc"
+								},
+								{
+									"key": "order_dir",
+									"value": "asc",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get patient by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "es",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/patient/1?institution_id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"patient",
+								"1"
+							],
+							"query": [
+								{
+									"key": "institution_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "upload report",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/home/citric-fede/Downloads/EjemplosReportesChallenge-20250902T233119Z-1-001/EjemplosReportesChallenge/Estudio Radiográfico Ramón.pdf"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/patient/upload_patient?institution_id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"patient",
+								"upload_patient"
+							],
+							"query": [
+								{
+									"key": "institution_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "study",
+			"item": [
+				{
+					"name": "get studies",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/study/?institution_id=1&patient_id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"study",
+								""
+							],
+							"query": [
+								{
+									"key": "institution_id",
+									"value": "1"
+								},
+								{
+									"key": "patient_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get studies results",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/study/results/?institution_id=1&result_id=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"study",
+								"results",
+								""
+							],
+							"query": [
+								{
+									"key": "institution_id",
+									"value": "1"
+								},
+								{
+									"key": "result_id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
