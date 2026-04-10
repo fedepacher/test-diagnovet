@@ -119,3 +119,24 @@
     background: rgba(200,184,154,.2) !important;
     transform: translateY(-1px) !important;
 }
+
+/* ── New patient button ── */
+.btn-new-patient .stButton > button {
+    background: rgba(200,184,154,.12) !important;
+    border: 1px solid #c8b89a !important;
+    border-radius: 10px !important;
+    color: #c8b89a !important;
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.03em !important;
+    text-transform: none !important;
+    padding: 10px 0 !important;
+    width: 100% !important;
+    margin-bottom: 10px !important;
+    transition: all .2s !important;
+}
+.btn-new-patient .stButton > button:hover {
+    background: rgba(200,184,154,.25) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 16px rgba(200,184,154,.15) !important;
+}

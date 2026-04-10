@@ -1,6 +1,6 @@
 import streamlit as st
 from utils import load_css, wait_for_backend
-from pages import login, register, home, patients, studies, study_result, upload
+from pages import login, register, home, patients, studies, study_result, upload, new_patient
 
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -55,3 +55,5 @@ elif page == "study_result":
     study_result.show()
 elif page == "upload":
     upload.show()
+elif page == "new_patient":
+    new_patient.show()

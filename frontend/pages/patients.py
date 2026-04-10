@@ -39,6 +39,13 @@ def show():
         st.session_state.patients_page = 1
         st.rerun()
 
+    # ── New Patient button ──
+    st.markdown('<div class="btn-new-patient">', unsafe_allow_html=True)
+    if st.button("➕ New Patient", key="btn_new_patient"):
+        set_page("new_patient")
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
     # ── Sort controls ──
     st.markdown('<div class="sort-row">', unsafe_allow_html=True)
     col_name, col_date, col_spacer = st.columns([2, 2, 1])
