@@ -1,7 +1,7 @@
 from typing import Optional, Literal, List
 from pydantic import BaseModel, Field
 
-from api.app.schema import pagination_info_schema, profile_schema
+from api.app.schema import pagination_info_schema, profile_schema, professional_schema
 from api.app.utils.global_def import ResultEnum, StatusEnum
 
 
@@ -37,8 +37,8 @@ class PatientBasicData(PatientId):
 
 class PatientInput(BaseModel):
     name: str = Field(..., description="Patient name")
-    specie: Optional[int] = Field(None, description="Specie ID")
-    breed: Optional[int] = Field(None, description="Specie ID")
+    specie_id: Optional[int] = Field(None, description="Specie ID")
+    breed_id: Optional[int] = Field(None, description="Specie ID")
     age: Optional[str] = Field(None, description="Age")
     gender_id: Optional[int] = Field(None, description="Gender ID")
     is_neutered: Optional[bool] = Field(None, description="If it is neutered")
@@ -51,6 +51,12 @@ class PatientCreateForm(BaseModel):
     """Form for creating a new patient."""
     owner: profile_schema.Profile = Field(...)
     patient: PatientInput = Field(...)
+
+
+class PatientCreateRaw(BaseModel):
+    owner: profile_schema.ProfileRaw
+    patient: PatientInput
+    professional: professional_schema.ProfessionalInfo | None = None
 
 
 class PaginatedPatientsResponse(BaseModel):

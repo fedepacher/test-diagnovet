@@ -107,6 +107,55 @@ def create_patient(
                                 detail="An error occurred while creating the patient.")
 
 
+async def create_patient_from_scratch(institution_id: int,
+                                data: patient_schema.PatientCreateRaw,
+                                user: user_schema.User):
+    try:
+        with db.atomic():
+            logging.info(f"Creating patient from scratch for user {user.username}.")
+            patient_form = patient_schema.PatientCreateForm(
+                owner=profile_schema.Profile(
+                    contact_email=data.owner.contact_email or None,
+                    name=data.owner.name or "Unknown",
+                    last_name=data.owner.last_name or "Unknown",
+                    document_number=data.owner.document_number or None,
+                    contact_number=data.owner.contact_number or None
+                ),
+                patient=patient_schema.PatientInput(
+                    name=data.patient.name or "Unknown",
+                    specie_id=data.patient.specie_id,
+                    breed_id=data.patient.breed_id,
+                    age=data.patient.age or "Unknown",
+                    gender_id=data.patient.gender_id,
+                    is_neutered=data.patient.is_neutered or False,
+                )
+            )
+
+            patient = create_patient(
+                patient_form,
+                institution_id,
+                user
+            )
+            logging.info(f"Patient {patient.id} created for user {user.username}.")
+
+            if data.professional:
+                logging.info("Creating professional profile")
+                professional_profile, _ = ProfileModel.get_or_create(
+                    name=data.professional.name or "Unknown",
+                    last_name=data.professional.last_name or "Unknown"
+                )
+                professional, _ = VeterinarianModel.get_or_create(
+                    profile=professional_profile.id,
+                    license_number=data.professional.license_number or  "Unknown"
+                )
+                logging.info(f"Professional profile {professional.id} created for user {user.username}.")
+            return patient
+    except Exception as e:
+        logging.error(f"Error creating patient: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="An error occurred while during patient creation.")
+
+
 def reactivate_patient(patient: PatientModel, user_id: int) -> None:
     """
     Reactivate a previously soft-deleted patient.
@@ -195,8 +244,8 @@ def create_new_patient(
         with db.atomic():
             new_patient = PatientModel(
                 name=patient.name,
-                species=patient.specie,
-                breed=patient.breed,
+                species=patient.specie_id,
+                breed=patient.breed_id,
                 age=patient.age,
                 gender=patient.gender_id,
                 is_neutered=patient.is_neutered,
@@ -401,7 +450,6 @@ def safe_get_optional_int(value) -> Optional[int]:
 
 def save_to_db_without_images(institution_id, data, user):
     with db.atomic():
-
         # OWNER → Profile
         owner_data = data.get("owner", {})
         patient_data = data.get("patient", {})
@@ -421,13 +469,11 @@ def save_to_db_without_images(institution_id, data, user):
                 contact_email=owner_data.get("email") or None,
                 name=owner_data.get("name") or "Unknown",
                 last_name=owner_data.get("last_name") or "Unknown",
-                created_at=datetime.now(),
-                updated_at=datetime.now(),
             ),
             patient=patient_schema.PatientInput(
                 name=patient_data.get("name") or "Unknown",
-                specie=specie_id,
-                breed=breed_id,
+                specie_id=specie_id,
+                breed_id=breed_id,
                 age=patient_data.get("age") or "Unknown",
                 gender_id=gender_id,
                 is_neutered=patient_data.get("neutered") or neutered,

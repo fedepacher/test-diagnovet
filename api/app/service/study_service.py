@@ -3,7 +3,7 @@ from typing import List
 from fastapi import HTTPException, Request, status
 from peewee import JOIN
 
-from api.app.schema import patient_schema, study_schema, veterinarian_schema
+from api.app.schema import patient_schema, study_schema, professional_schema
 from api.app.model.patient_model import Patients as PatientModel
 from api.app.model.profile_model import Profiles as ProfileModel
 from api.app.model.study_model import Studies as StudyModel
@@ -154,7 +154,7 @@ async def get_study_result(institution_id: int, result_id: int, accept_language:
                 recommendations=study.recommendations,
                 created_at=study.created_at,
                 patient=patient_schema.PatientInfo(**patient_data) if patient_data else None,
-                veterinarian=veterinarian_schema.VeterinarianInfo(**veterinarian_data) if veterinarian_data else None,
+                veterinarian=professional_schema.ProfessionalInfo(**veterinarian_data) if veterinarian_data else None,
                 results=list(results),
                 images=list(images)
             )

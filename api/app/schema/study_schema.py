@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel
 
-from api.app.schema import pagination_info_schema, patient_schema, veterinarian_schema
+from api.app.schema import pagination_info_schema, patient_schema, professional_schema
 
 
 class StudyBase(BaseModel):
@@ -45,7 +45,7 @@ class StudyDetailSchema(BaseModel):
     created_at: datetime
 
     patient: patient_schema.PatientInfo
-    veterinarian: Optional[veterinarian_schema.VeterinarianInfo] = None
+    veterinarian: Optional[professional_schema.ProfessionalInfo] = None
 
     results: List[StudyResultItem] = []
     images: List[StudyImageItem] = []
