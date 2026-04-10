@@ -588,84 +588,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "owner_email",
-									"value": "frant.torres@mail.com",
-									"type": "text"
-								},
-								{
-									"key": "owner_name",
-									"value": "fran",
-									"type": "text"
-								},
-								{
-									"key": "owner_last_name",
-									"value": "torres",
-									"type": "text"
-								},
-								{
-									"key": "owner_role_id",
-									"value": "1",
-									"type": "text"
-								},
-								{
-									"key": "owner_document_number",
-									"value": "1223987465",
-									"type": "text"
-								},
-								{
-									"key": "owner_contact_number",
-									"value": "123456789",
-									"type": "text"
-								},
-								{
-									"key": "owner_country_id",
-									"value": "2",
-									"type": "text"
-								},
-								{
-									"key": "name",
-									"value": "buby",
-									"type": "text"
-								},
-								{
-									"key": "specie",
-									"value": "1",
-									"type": "text"
-								},
-								{
-									"key": "breed",
-									"value": "1",
-									"type": "text"
-								},
-								{
-									"key": "age",
-									"value": "10",
-									"type": "text"
-								},
-								{
-									"key": "gender_id",
-									"value": "2",
-									"type": "text"
-								},
-								{
-									"key": "is_neutered",
-									"value": "false",
-									"type": "text"
-								},
-								{
-									"key": "vet_name",
-									"value": "Castro",
-									"type": "text"
-								},
-								{
-									"key": "vet_license",
-									"value": "123456",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"owner\": {\n        \"contact_email\": \"sdowner@mail.com\",\n        \"name\": \"Juanas\",\n        \"last_name\": \"Perezaa\",\n        \"document_number\": \"213456\",\n        \"contact_number\": \"123456484\"\n    },\n    \"patient\": {\n        \"name\": \"Finaaaa\",\n        \"specie_id\": 1,\n        \"breed_id\": 1,\n        \"age\": \"5\",\n        \"gender_id\": 1,\n        \"is_neutered\": true\n    },\n    \"professional\": {\n        \"name\": \"Carlos\",\n        \"last_name\": \"Gomez\",\n        \"license_number\": \"ABC123\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "http://localhost:8000/patient/?institution_id=1",
