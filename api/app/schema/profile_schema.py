@@ -6,6 +6,18 @@ from api.app.schema import user_schema
 from api.app.schema import institution_schema, gender_schema, country_schema, role_schema
 
 
+class ProfileRaw(BaseModel):
+    """Base profile schema with optional fields properly defined."""
+    contact_email: Optional[str] = None
+    name: Optional[str] = None
+    last_name: Optional[str] = None
+    document_number: Optional[str] = None
+    contact_number: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
 class ProfileBase(BaseModel):
     """Base profile schema with optional fields properly defined."""
     contact_email: Optional[str] = None
@@ -24,8 +36,6 @@ class ProfileBase(BaseModel):
 class Profile(ProfileBase):
     """Extended profile schema with relationship fields."""
     role: Optional[role_schema.RolesBase] = None
-    created_at: datetime
-    updated_at: datetime
 
 
 class ProfileResponse(BaseModel):

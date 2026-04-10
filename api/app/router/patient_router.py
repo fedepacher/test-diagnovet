@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter, Depends, status, Path, UploadFile, HTTPException, Request
+from fastapi import APIRouter, Body, Depends, status, Path, UploadFile, Request
 from typing import List, Optional
 
 from api.app.schema import patient_schema
@@ -21,26 +21,17 @@ router = APIRouter(prefix="/patient")
     description="Creates a new patient record including profile information and initial status data."
 )
 @fetch_institution()
-def create_patient(
+async def create_patient(
     institution_id: int,
-    form_data: patient_schema.PatientCreateForm = Depends(patient_schema.PatientCreateForm),
+    data: patient_schema.PatientCreateRaw,
     current_user: User = Depends(get_current_user)
 ):
     """
     Create a new patient record in the database.
 
-    This endpoint:
-    - Creates a new patient profile with personal information
-    - Creates an initial status record with date fixed to 01-01-2025 00:00:00
-    - Validates all required fields and foreign key references
-    - Handles patient reactivation if previously soft-deleted
-
-    IMPORTANT: The status_date parameter is ignored. The first status of any patient
-    is always set to 01-01-2025 00:00:00 for consistency.
-
     Args:
-        form_data: Patient personal and sports information
         institution_id: Institution ID
+        data: Patient personal and information
         current_user: Authenticated user
 
     Returns:
@@ -51,10 +42,10 @@ def create_patient(
         HTTPException 404: Referenced entities not found
         HTTPException 500: Server error during creation
     """
-    return patient_service.create_patient_complete(
-        form_data=form_data,
+    return await patient_service.create_patient_from_scratch(
         institution_id=institution_id,
-        current_user=current_user,
+        data=data,
+        user=current_user
     )
 
 
